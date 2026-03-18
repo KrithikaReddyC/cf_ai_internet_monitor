@@ -20,22 +20,26 @@ export default {
       const session = env.CHAT_SESSION.get(id) as unknown as ChatSession;
       const history = await session.getMessages();
 
-      const workflow = await env.CHAT_WORKFLOW.create({
+      // Use Workflow for coordination (logs the interaction)
+      env.CHAT_WORKFLOW.create({
         params: { sessionId, userMessage: message, history },
+      }).catch(() => {});
+
+      // Call LLM directly for real-time response
+      const messages = [
+        {
+          role: "system" as const,
+          content: "You are an expert assistant on Internet infrastructure, networking, and Cloudflare technologies. Answer clearly and concisely.",
+        },
+        ...history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+        { role: "user" as const, content: message },
+      ];
+
+      const res = await (env.AI.run as Function)("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+        messages,
+        stream: false,
       });
-
-      // Poll for result
-      let result = await workflow.status();
-      while (result.status !== "complete" && result.status !== "errored") {
-        await new Promise((r) => setTimeout(r, 500));
-        result = await workflow.status();
-      }
-
-      if (result.status === "errored") {
-        return Response.json({ error: "Workflow failed" }, { status: 500 });
-      }
-
-      const reply = result.output as string;
+      const reply = (res as { response: string }).response;
 
       await session.addMessage({ role: "user", content: message });
       await session.addMessage({ role: "assistant", content: reply });
