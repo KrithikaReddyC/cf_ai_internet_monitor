@@ -28,7 +28,7 @@ export default {
         const messages = [
           {
             role: "system" as const,
-            content: "You are an expert assistant on Internet infrastructure, networking, and Cloudflare technologies. Answer clearly and concisely.",
+            content: "You are an expert assistant on Internet infrastructure, networking, and Cloudflare technologies. Only answer questions related to these topics. If asked about anything else, politely decline and redirect the user to ask about networking or Internet topics.",
           },
           ...history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
           { role: "user" as const, content: message },
