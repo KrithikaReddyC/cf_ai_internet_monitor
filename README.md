@@ -46,7 +46,7 @@ Open http://localhost:8787 in your browser.
 npm run deploy
 ```
 
-Wrangler will output a live URL like `https://cf-ai-internet-monitor.<your-subdomain>.workers.dev`.
+Wrangler will output a live URL. Deployed at: **https://cf-ai-internet-monitor.kcherukupally1.workers.dev**
 
 ## How It Works
 

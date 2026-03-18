@@ -12,7 +12,7 @@ class_name = "ChatSession"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["ChatSession"]
+new_sqlite_classes = ["ChatSession"]
 
 [[workflows]]
 name = "chat-workflow"
