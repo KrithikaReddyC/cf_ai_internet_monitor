@@ -6,21 +6,26 @@ export interface Message {
 }
 
 export class ChatSession extends DurableObject {
-  private messages: Message[] = [];
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
 
-  async addMessage(msg: Message): Promise<void> {
-    this.messages.push(msg);
-    await this.ctx.storage.put("messages", this.messages);
-  }
+    if (url.pathname === "/messages" && request.method === "GET") {
+      const stored = await this.ctx.storage.get<Message[]>("messages");
+      return Response.json(stored ?? []);
+    }
 
-  async getMessages(): Promise<Message[]> {
-    const stored = await this.ctx.storage.get<Message[]>("messages");
-    this.messages = stored ?? [];
-    return this.messages;
-  }
+    if (url.pathname === "/messages" && request.method === "POST") {
+      const newMessages = await request.json<Message[]>();
+      const stored = await this.ctx.storage.get<Message[]>("messages") ?? [];
+      await this.ctx.storage.put("messages", [...stored, ...newMessages]);
+      return Response.json({ ok: true });
+    }
 
-  async clear(): Promise<void> {
-    this.messages = [];
-    await this.ctx.storage.delete("messages");
+    if (url.pathname === "/clear" && request.method === "DELETE") {
+      await this.ctx.storage.delete("messages");
+      return Response.json({ ok: true });
+    }
+
+    return new Response("Not found", { status: 404 });
   }
 }
