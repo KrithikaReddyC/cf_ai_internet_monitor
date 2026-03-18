@@ -13,7 +13,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    if (request.method === "POST" && url.pathname === "/chat") {
+    if (request.method === "POST" && url.pathname === "/api/chat") {
       const { sessionId, message } = await request.json<{ sessionId: string; message: string }>();
 
       const id = env.CHAT_SESSION.idFromName(sessionId);
@@ -47,7 +47,7 @@ export default {
       return Response.json({ reply });
     }
 
-    if (request.method === "DELETE" && url.pathname === "/chat") {
+    if (request.method === "DELETE" && url.pathname === "/api/chat") {
       const { sessionId } = await request.json<{ sessionId: string }>();
       const id = env.CHAT_SESSION.idFromName(sessionId);
       const session = env.CHAT_SESSION.get(id) as unknown as ChatSession;

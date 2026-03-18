@@ -66,7 +66,7 @@
       thinking.classList.add("thinking");
 
       try {
-        const res = await fetch("/chat", {
+        const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId, message }),
@@ -86,7 +86,7 @@
     sendBtn.addEventListener("click", send);
     inputEl.addEventListener("keydown", (e) => e.key === "Enter" && send());
     clearBtn.addEventListener("click", async () => {
-      await fetch("/chat", {
+      await fetch("/api/chat", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
