@@ -37,6 +37,7 @@ export default {
         const res = await (env.AI.run as Function)("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
           messages,
           stream: false,
+          max_tokens: 1024,
         });
         const reply = (res as { response: string }).response;
 
